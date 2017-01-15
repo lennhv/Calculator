@@ -9,49 +9,37 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener {
     private TextView operationText, resultText;
-    private ArrayList<View> allButtons;
     private double resultMemory;
 
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    //private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "LENIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i(TAG, "onCreate device*************");
         operationText = (TextView)findViewById(R.id.operationLabel);
         resultText = (TextView)findViewById(R.id.resultLabel);
         resultMemory = 0;
 
+        // set buttons onClick Event handler on fly
         GridLayout pad = (GridLayout)findViewById(R.id.button_container);
         for (int i=0; i<pad.getChildCount(); i++) {
             View v = pad.getChildAt(i);
             if (v instanceof Button) {
-
+                v.setOnClickListener(this);
             }
         }
-
-        // Get all buttons in GridLayout
-        allButtons = ((GridLayout)findViewById(R.id.button_container)).getTouchables();
-        while (allButtons.iterator().hasNext()){
-            allButtons.iterator().next().toString();
-            Log.i(TAG, "******* Iterator " + allButtons.iterator().next().toString());
-        }
-
     }
 
     @Override
     public void onClick(View v) {
-        Log.i(TAG, "onClick " + v.getId());
+        Log.i(TAG, "...onClick " + v.getId());
         switch (v.getId()) {
             case R.id.ce:
                 clearEntry();
@@ -93,10 +81,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void backCharacter(){
         String boxTex = operationText.getText().toString();
-        if (boxTex.length()>0) {
-            // delete last written character
-            updateTextView(operationText, boxTex.substring(0, boxTex.length()-2));
-        }
+        updateTextView(operationText,
+                (boxTex.length()>1) ? boxTex.substring(0, boxTex.length()-1): "0");
     }
 
     // reset result memory
@@ -107,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements
     //update the text of operationTextView
     private void updateOperationText(String txt){
         String boxTex = operationText.getText().toString();
-        Log.i(TAG, "Text: " + boxTex);
+        Log.i(TAG, "Operation Text: " + boxTex);
         /*Ternary operator. e.g.: minVal = (a < b) ? a : b; */
         updateTextView(operationText, (boxTex == "0") ? txt: boxTex + txt);;
     }
@@ -124,11 +110,11 @@ public class MainActivity extends AppCompatActivity implements
 
     //update the tex of an  TextView
     private void updateTextView(TextView object, String txt) {
-        Log.i(TAG, "Set text to: "+ object.toString());
         object.setText(txt);
-        Log.i(TAG, "New Text: " + object.getText().toString());
     }
 
+    // String eval function, from stackOverflow
+    // https://stackoverflow.com/questions/3422673/evaluating-a-math-expression-given-in-string-form/37695001
     public static double evalMath(final String str) {
         return new Object() {
             int pos = -1, ch;
